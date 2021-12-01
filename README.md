@@ -1,2 +1,2 @@
 # login
-基于servlet+jsp完成的实现登陆页面功能
+基于servlet+jsp实现的登陆页面功能
