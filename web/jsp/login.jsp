@@ -8,23 +8,22 @@
     <link href="<%=request.getContextPath()%>/css/admin_login.css" rel="stylesheet" type="text/css"/>
 
     <%--点击刷新验证码--%>
-    <%--    <script type="text/javascript">
+        <script type="text/javascript">
             function changeImg() {
                 var img = document.getElementById("img");
                 img.src = "<%=request.getContextPath()%>/authImage?date=" + new Date();
             }
-        </script>--%>
+        </script>
 </head>
 <body>
 
+<%--防止重复登陆--%>
 <%
-
-    if (session.getAttribute("account") != null) {
-        response.sendRedirect(request.getContextPath() + "/jsp/list.jsp");
+    if (session.getAttribute("loginName") != null) {
+        response.sendRedirect(request.getContextPath() + "/jsp/index.jsp");
     }
 
 %>
-
 <div class="admin_login_wrap">
     <h1>用户登陆</h1>
     <div class="adming_login_border">
@@ -39,13 +38,13 @@
                         <label for="password">密码：</label>
                         <input type="password" name="password" id="password" size="35" class="admin_input_style"/>
                     </li>
-<%--                    <li>
+                   <li>
                         <label for="checkcode">验证码:</label>
                         <input type="text" name="checkcode" id="checkcode" size="18" class="admin_input_style"/>
                         <img id="img" src="<%=request.getContextPath()%>/authImage" onclick="changeImg()"
                              style="position:relative;top: 10px"/>
                     </li>
-                    <li>
+                   <%--  <li>
                         <input type="checkbox" name="ten" id="ten" value="1"/>10天免登录
                     </li>--%>
                     <li>

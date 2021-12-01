@@ -1,61 +1,41 @@
 package com.bjpn.javaweb.servlet;
 
-import com.bjpn.javaweb.bean.Account;
-import com.bjpn.javaweb.utils.JDBCUtils;
+import com.bjpn.javaweb.dao.AccountDao;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 
 @WebServlet("/login")
 public class loginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         request.setCharacterEncoding("utf-8");
+        HttpSession session = request.getSession();
 
-        String loginNname = request.getParameter("username");
+        //提取请求中的数据
+        String loginName = request.getParameter("username");
         String loginPwd = request.getParameter("password");
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        boolean verify = false;
+        String checkCode = request.getParameter("checkcode");
+        //转换为小写字母
+        checkCode = checkCode.toLowerCase();
 
-        Account account = null;
+        //提取会话域中的验证码
+        String verCode = (String) session.getAttribute("verCode");
+        //验证输入验证码
+        boolean checkCodeOK = checkCode.equals(verCode);
 
-        try {
-            conn = JDBCUtils.getConnection();
-            String sql = "select * from t_user where loginName=? and loginPwd=? ";
-            ps = conn.prepareStatement(sql);
-            ps.setString(1, loginNname);
-            ps.setString(2, loginPwd);
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                verify = true;
-                account = new Account();
-                account.setLoginName(rs.getString("loginNname"));
-                account.setLoginPwd(rs.getString("loginPwd"));
+        //验证账号密码
+        AccountDao accountDao = new AccountDao();
+        boolean verify = accountDao.isVerify(loginName, loginPwd);
 
-            }
+        //验证成功 跳转到系统页
+        if (verify && checkCodeOK) {
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-
-            JDBCUtils.close(conn, ps, rs);
-        }
-        if (verify) {
-            //验证成功 跳转到系统页
-            HttpSession session = request.getSession();
-            session.setAttribute("account", account);
+            session.setAttribute("loginName", loginName);
 
             response.sendRedirect(request.getContextPath() + "/jsp/loginsucceed.jsp");
 
@@ -65,6 +45,34 @@ public class loginServlet extends HttpServlet {
 
         }
 
+    }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        String type = request.getParameter("type");
+        if (type != null) {
+            if (type.equals("logout")) {
+                //清除cookie专用
+/*
+        Cookie[] cookies = request.getCookies();
+
+
+       for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("loginName")) {
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            } else if (cookie.getName().equals("loginpwd")) {
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        }*/
+                request.getSession().removeAttribute("loginName");
+                response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+            }
+
+        } else {
+            response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
+        }
     }
 }

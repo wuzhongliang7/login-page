@@ -6,7 +6,7 @@
     <title>登陆成功页面</title>
     <script type="text/javascript">
         window.alert("登陆成功!")
-        window.location.href = "<%=request.getContextPath()%>/jsp/list.jsp"
+        window.location.href = "<%=request.getContextPath()%>/jsp/index.jsp"
     </script>
 </head>
 <body>
