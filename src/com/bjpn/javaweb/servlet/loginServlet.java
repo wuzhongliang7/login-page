@@ -1,5 +1,6 @@
 package com.bjpn.javaweb.servlet;
 
+import com.bjpn.javaweb.bean.Account;
 import com.bjpn.javaweb.utils.JDBCUtils;
 
 import javax.servlet.ServletException;
@@ -7,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,6 +29,8 @@ public class loginServlet extends HttpServlet {
         ResultSet rs = null;
         boolean verify = false;
 
+        Account account = null;
+
         try {
             conn = JDBCUtils.getConnection();
             String sql = "select * from t_user where loginName=? and loginPwd=? ";
@@ -36,9 +40,9 @@ public class loginServlet extends HttpServlet {
             rs = ps.executeQuery();
             if (rs.next()) {
                 verify = true;
-/*                Account account = new Account();
+                account = new Account();
                 account.setLoginName(rs.getString("loginNname"));
-                account.setLoginPwd(rs.getString("loginPwd"));*/
+                account.setLoginPwd(rs.getString("loginPwd"));
 
             }
 
@@ -50,6 +54,9 @@ public class loginServlet extends HttpServlet {
         }
         if (verify) {
             //验证成功 跳转到系统页
+            HttpSession session = request.getSession();
+            session.setAttribute("account", account);
+
             response.sendRedirect(request.getContextPath() + "/jsp/loginsucceed.jsp");
 
         } else {

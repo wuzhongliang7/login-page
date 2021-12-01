@@ -17,6 +17,14 @@
 </head>
 <body>
 
+<%
+
+    if (session.getAttribute("account") != null) {
+        response.sendRedirect(request.getContextPath() + "/jsp/list.jsp");
+    }
+
+%>
+
 <div class="admin_login_wrap">
     <h1>用户登陆</h1>
     <div class="adming_login_border">
