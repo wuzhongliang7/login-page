@@ -1,4 +1,6 @@
 # login
+servlet+jsp+javabean based login page
+
 基于servlet+jsp+javabean实现的登录页面
 ## 快速运行
 配置 src/com/bjpn/javaweb/resource/prop.properties 修改你的数据库信息，确认能建立连接。
